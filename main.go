@@ -1,7 +1,24 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/bregydoc/gtranslate"
+)
 
 func main() {
-	fmt.Println('Hello World')
+	text := "Are you good?"
+	translated, err := gtranslate.TranslateWithParams(
+		text,
+		gtranslate.TranslationParams{
+			From: "en",
+			To:   "ja",
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("en: %s | ja: %s \n", text, translated)
+	// en: Hello World | ja: こんにちは世界
 }
