@@ -2,12 +2,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 	"text/template"
 
 	"github.com/bregydoc/gtranslate"
+	"golang.org/x/text/language"
 )
 
 type pageData struct {
@@ -19,35 +21,41 @@ func main() {
 	fileFlag := flag.String("file", "english-words.docx", "define input text")
 	flag.Parse()
 
-	runFile(*fileFlag)
+	// fmt.Println(fileFlag)
+	runFile(*fileFlag, "txt_dir/")
 }
 
-func runFile(fileFlag string) {
+func containsExt(fileFlag string) bool {
 
 	var fileName string = fileFlag
-	var fileTypes = [4]string{".txt", ".docx", ".odt", ".rtf"}
+	var fileTypes = [4]string{".docx", ".txt", ".odt", ".rtf"}
+	extension := fileName[strings.Index(fileFlag, "."):len(fileFlag)]
 
 	for _, ext := range fileTypes {
-		if fileName[strings.Index(fileFlag, "."):len(fileFlag)] != ext {
-			return
+		if extension != ext {
+			return true
 		}
 	}
+	return false
+}
 
-	fileName = fileName[0:strings.Index(fileFlag, ".")] + ".txt"
-	var data string = readFile(fileFlag)
+func runFile(fileFlag, directory string) {
+	var fileName string = fileFlag
+
+	if !containsExt(fileFlag) {
+		fmt.Println("Provide valid file")
+	}
+
+	fileName = fileName[0:strings.Index(fileFlag, ".")] + ".html"
+	var data string = readFile(directory + fileFlag)
+	fmt.Println(data)
 	renderText("template.tmpl", data, fileName)
 
 }
 
-func translateText(txtData string) {
+func translateText(txtData string) string {
 
-	translated, err := gtranslate.TranslateWithParams(
-		txtData,
-		gtranslate.TranslationParams{
-			From: "en",
-			To:   "ja",
-		},
-	)
+	translated, err := gtranslate.Translate(txtData, language.English, language.Spanish)
 	if err != nil {
 		panic(err)
 	}
@@ -62,7 +70,7 @@ func renderText(tPath, textData, fileName string) {
 		tPath,
 	}
 
-	file, err := os.Create(fileName)
+	file, err := os.Create("templates/" + fileName)
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +80,8 @@ func renderText(tPath, textData, fileName string) {
 		panic(err)
 	}
 
-	txtTranslated, err := translateText(textData)
+	txtTranslated := translateText(textData)
+	fmt.Println(txtTranslated)
 
 	originName := fileName[0:strings.Index(fileName, ".")]
 
