@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 	"text/template"
 
@@ -50,7 +52,22 @@ func runFile(fileFlag, langFlag, translatelLangFlag, directory string) {
 	fileName = fileName[0:strings.Index(fileFlag, ".")] + ".html"
 	var data string = readFile(directory + fileFlag)
 	fmt.Println(data)
-	renderText("template.tmpl", data, fileName, langFlag, translatelLangFlag)
+
+	http.Handle("/", http.FileServer(http.Dir("./templates")))
+
+	url := "http://localhost:5000"
+
+	fmt.Println("Success! Created your template.")
+	fmt.Printf("Serving your content on port %s\n", url)
+	err := exec.Command("open", url).Start()
+
+	if err != nil {
+		panic(err)
+	}
+
+	if err = http.ListenAndServe(":5000", nil); err != nil {
+		fmt.Printf("Error occured when trying to serve template. Error: %v\n", err)
+	}
 
 }
 

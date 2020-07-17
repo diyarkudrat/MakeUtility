@@ -9,7 +9,13 @@
         href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
         crossorigin="anonymous"
-    />
+  />
+  <style>
+
+    .row ml-2 {height: 100%}
+
+  </style>
+
 </head>
 <body>
 
@@ -29,7 +35,7 @@
   <div class="row ml-2 my-1">
       <div class="col-lg-2"> </div>
       <div class="col-lg-8 card">
-        {{ .Content }}
+        <a>{{ .Content }}</a>
       </div>
       <div class="col-lg-2"> </div>
   </div>
