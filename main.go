@@ -9,7 +9,6 @@ import (
 	"text/template"
 
 	"github.com/bregydoc/gtranslate"
-	"golang.org/x/text/language"
 )
 
 type pageData struct {
@@ -19,10 +18,12 @@ type pageData struct {
 
 func main() {
 	fileFlag := flag.String("file", "english-words.docx", "define input text")
+	langFlag := flag.String("language", "", "define what language text is in")
+	translatelLangFlag := flag.String("translated", "", "define what language to translate to")
 	flag.Parse()
 
 	// fmt.Println(fileFlag)
-	runFile(*fileFlag, "txt_dir/")
+	runFile(*fileFlag, *langFlag, *translatelLangFlag, "txt_dir/")
 }
 
 func containsExt(fileFlag string) bool {
@@ -39,7 +40,7 @@ func containsExt(fileFlag string) bool {
 	return false
 }
 
-func runFile(fileFlag, directory string) {
+func runFile(fileFlag, langFlag, translatelLangFlag, directory string) {
 	var fileName string = fileFlag
 
 	if !containsExt(fileFlag) {
@@ -49,13 +50,20 @@ func runFile(fileFlag, directory string) {
 	fileName = fileName[0:strings.Index(fileFlag, ".")] + ".html"
 	var data string = readFile(directory + fileFlag)
 	fmt.Println(data)
-	renderText("template.tmpl", data, fileName)
+	renderText("template.tmpl", data, fileName, langFlag, translatelLangFlag)
 
 }
 
-func translateText(txtData string) string {
+func translateText(txtData, langFlag, translatelLangFlag string) string {
 
-	translated, err := gtranslate.Translate(txtData, language.English, language.Spanish)
+	// fmt.Printf("Name: %v\nPrice: %v\n\n", item.Name, item.Price)
+	translated, err := gtranslate.TranslateWithParams(
+		txtData,
+		gtranslate.TranslationParams{
+			From: langFlag,
+			To:   translatelLangFlag,
+		},
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +73,7 @@ func translateText(txtData string) string {
 	return string(translated)
 }
 
-func renderText(tPath, textData, fileName string) {
+func renderText(tPath, textData, fileName, langFlag, translatelLangFlag string) {
 	paths := []string{
 		tPath,
 	}
@@ -80,7 +88,7 @@ func renderText(tPath, textData, fileName string) {
 		panic(err)
 	}
 
-	txtTranslated := translateText(textData)
+	txtTranslated := translateText(textData, langFlag, translatelLangFlag)
 	fmt.Println(txtTranslated)
 
 	originName := fileName[0:strings.Index(fileName, ".")]
