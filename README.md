@@ -12,7 +12,7 @@ Custom Static Site Generator that's able to translate the text in a word file us
 Command to run program specifying the language of the text file and what language you want to translate to.
 
 ```
-  ./makeutility -language="" -translated="" 
+  ./makeutility -language=(insert abbreviation) -translated=(insert abbreviation) 
 ```
 
 
