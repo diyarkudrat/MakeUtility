@@ -90,3 +90,5 @@ Command to run program specifying the language of the text file and what languag
 | Indonesian          | id    |
 | Yiddish             |	yi    |
 
+source: https://www.labnol.org/code/19899-google-translate-languages
+
