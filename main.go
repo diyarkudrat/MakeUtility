@@ -19,12 +19,11 @@ type pageData struct {
 }
 
 func main() {
-	fileFlag := flag.String("file", "english-words.docx", "define input text")
+	fileFlag := flag.String("file", "", "define input text")
 	langFlag := flag.String("language", "", "define what language text is in")
 	translatelLangFlag := flag.String("translated", "", "define what language to translate to")
 	flag.Parse()
 
-	// fmt.Println(fileFlag)
 	runFile(*fileFlag, *langFlag, *translatelLangFlag, "txt_dir/")
 }
 
@@ -52,6 +51,7 @@ func runFile(fileFlag, langFlag, translatelLangFlag, directory string) {
 	fileName = fileName[0:strings.Index(fileFlag, ".")] + ".html"
 	var data string = readFile(directory + fileFlag)
 	fmt.Println(data)
+	renderText("template.tmpl", data, fileName, langFlag, translatelLangFlag)
 
 	http.Handle("/", http.FileServer(http.Dir("./templates")))
 
@@ -73,7 +73,6 @@ func runFile(fileFlag, langFlag, translatelLangFlag, directory string) {
 
 func translateText(txtData, langFlag, translatelLangFlag string) string {
 
-	// fmt.Printf("Name: %v\nPrice: %v\n\n", item.Name, item.Price)
 	translated, err := gtranslate.TranslateWithParams(
 		txtData,
 		gtranslate.TranslationParams{
@@ -85,8 +84,7 @@ func translateText(txtData, langFlag, translatelLangFlag string) string {
 		panic(err)
 	}
 
-	// fmt.Printf("en: %s | ja: %s \n", txtData, translated)
-	// en: Hello World | ja: こんにちは世界
+	fmt.Println(translated)
 	return string(translated)
 }
 
@@ -94,12 +92,10 @@ func renderText(tPath, textData, fileName, langFlag, translatelLangFlag string) 
 	paths := []string{
 		tPath,
 	}
-
 	file, err := os.Create("templates/" + fileName)
 	if err != nil {
 		panic(err)
 	}
-
 	text, err := template.New(tPath).ParseFiles(paths...)
 	if err != nil {
 		panic(err)
@@ -109,12 +105,10 @@ func renderText(tPath, textData, fileName, langFlag, translatelLangFlag string) 
 	fmt.Println(txtTranslated)
 
 	originName := fileName[0:strings.Index(fileName, ".")]
-
 	err = text.Execute(file, pageData{txtTranslated, originName})
 	if err != nil {
 		panic(err)
 	}
-
 	file.Close()
 }
 
@@ -124,6 +118,5 @@ func readFile(fileName string) string {
 		panic(err)
 	}
 
-	// fmt.Println(string(fileContents))
 	return string(fileContents)
 }
