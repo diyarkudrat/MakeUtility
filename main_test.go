@@ -15,4 +15,4 @@ func TestDivision(t *testing.T) {
         assert.IsType(t, test.err, err)
         assert.Equal(t, test.result, result)
     }
-}
+
